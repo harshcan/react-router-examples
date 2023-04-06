@@ -1,43 +1,31 @@
-import React, { Fragment } from "react";
-import { StyleSheet, css } from "aphrodite/no-important";
-import { useParams, useRouteMatch, Switch, Route } from "react-router-dom";
-
-import Model from "./Model";
-import SubMenu from "./SubMenu";
-
-const styles = StyleSheet.create({
-	conatiner: {
-		display: "flex",
-	},
-	row: {
-		padding: "5px",
-	},
-	h1: {
-		fontWeight: "300",
-		margin: "10px 20px",
-		fontSize: "45px",
-		color: "#a1352a",
-	},
-});
+import React, { useEffect, useState } from "react";
+import { useParams, useHistory } from "react-router-dom";
 
 const Brand = () => {
-	const { brand } = useParams();
-	const { url } = useRouteMatch();
-	return (
-		<Fragment>
-			<h1 className={css(styles.h1)}>{brand}</h1>
-			<div className={css(styles.conatiner)}>
-				<SubMenu />
-				<div className={css(styles.row)}>
-					<Switch>
-						<Route path={`${url}/:model`}>
-							<Model />
-						</Route>
-					</Switch>
-				</div>
-			</div>
-		</Fragment>
-	);
+  const { id } = useParams();
+  const history = useHistory();
+  const [countdown, setCountdown] = useState(5);
+
+  useEffect(() => {
+    const externalLink = localStorage.getItem(id);
+    if (externalLink) {
+      const countdownInterval = setInterval(() => {
+        setCountdown((countdown) => countdown - 1);
+      }, 1000);
+      setTimeout(() => {
+        window.location.href = externalLink;
+      }, 5000);
+      return () => clearInterval(countdownInterval);
+    } else {
+      history.push("/");
+    }
+  }, [id, history]);
+
+  return (
+    <div>
+      <p>Redirecting in {countdown} seconds...</p>
+    </div>
+  );
 };
 
 export default Brand;
